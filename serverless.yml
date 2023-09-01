@@ -1,4 +1,3 @@
-org: jefalive
 app: recipe-apigw-athena
 service: recipe-apigw-athena
 frameworkVersion: '3'
