@@ -12,7 +12,7 @@
     "serverless": "^3.34.0",
     "serverless-apigateway-service-proxy": "^1.12.0",
     "serverless-athena": "^1.1.1",
-    "serverless-s3-remover": "^0.6.0"
+    "serverless-s3-cleaner": "^2.0.2"
   },
   "dependencies": {
     "athena-express": "^7.1.0",

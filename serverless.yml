@@ -52,7 +52,7 @@ custom:
   s3:
     METRICS_BUCKET: ${self:service}-${sls:stage}
 
-  remover:
+  serverless-s3-cleaner:
     buckets:
       - ${self:custom.s3.METRICS_BUCKET}
 
@@ -61,7 +61,7 @@ custom:
       - name: ${self:custom.DATABASE_NAME} # required, your database name, do not use an existing database, will be dropped in deployement process
         output: s3://${self:custom.s3.METRICS_BUCKET}/ # required, your results bucket
         ddl: ${file(athena/sql/create-database.sql)} # optional, your DDL containing the CREATE DATABASE statement
-        tables: # list of yout tables
+        tables: # list of your tables
           - name: ${self:custom.ATHENA_TABLE_NAME} # required, table name
             ddl: ${file(athena/sql/create-table.sql)} # required, DDL containing the CREATE TABLE
             keepPartitions: true # force backup and restore partitions
@@ -80,7 +80,7 @@ resources:
 
 plugins:
   - serverless-athena
-  - serverless-s3-remover
+  - serverless-s3-cleaner
   - serverless-apigateway-service-proxy
 
 functions:
