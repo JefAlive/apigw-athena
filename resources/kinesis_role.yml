@@ -1,0 +1,54 @@
+Resources:
+  KinesisDeliveryRole:
+      Type: AWS::IAM::Role
+      Properties:
+          RoleName: ${self:service}-kinesis-role-${sls:stage}
+          AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ''
+                Effect: Allow
+                Principal:
+                  Service: firehose.amazonaws.com
+                Action: 'sts:AssumeRole'
+                Condition:
+                  StringEquals:
+                    'sts:ExternalId': ${self:custom.AWS_ACCOUNT}
+          Path: "/"
+          Policies:
+              - PolicyName: firehose_delivery_policy
+                PolicyDocument:
+                  Version: '2012-10-17'
+                  Statement:
+                      - Effect: Allow
+                        Action:
+                          - 's3:AbortMultipartUpload'
+                          - 's3:GetBucketLocation'
+                          - 's3:GetObject'
+                          - 's3:ListBucket'
+                          - 's3:ListBucketMultipartUploads'
+                          - 's3:PutObject'
+                        Resource:
+                          - !Sub 'arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}'
+                          - !Sub 'arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}/*'
+                      - Effect: Allow
+                        Action: 'glue:GetTableVersions'
+                        Resource: '*'
+              - PolicyName: stream_to_firehose
+                PolicyDocument:
+                  Version: '2012-10-17'
+                  Statement:
+                      - Effect: Allow
+                        Action:
+                          - 'kinesis:PutRecords'
+                          - 'kinesis:DescribeStream'
+                          - 'kinesis:GetShardIterator'
+                          - 'kinesis:GetRecords'
+                        Resource:
+                          - { Fn::GetAtt: [KinesisStream, Arn] }
+                      - Effect: Allow
+                        Action: 'glue:GetTableVersions'
+                        Resource: '*'
+
+
+                        

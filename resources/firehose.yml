@@ -1,0 +1,40 @@
+Resources:
+    KinesisStream: 
+      Type: AWS::Kinesis::Stream 
+      Properties: 
+          Name: MetricsKinesisStream 
+          RetentionPeriodHours: 24
+          ShardCount: 1
+
+    KinesisDeliveryStream:
+        Type: AWS::KinesisFirehose::DeliveryStream
+        Properties:
+            DeliveryStreamName: ${self:custom.FIREHOSE_NAME}
+            DeliveryStreamType: KinesisStreamAsSource
+            KinesisStreamSourceConfiguration: 
+                KinesisStreamARN: { Fn::GetAtt: [KinesisStream, Arn] }
+                RoleARN: { Fn::GetAtt: [KinesisDeliveryRole, Arn] }
+            ExtendedS3DestinationConfiguration:
+                BucketARN: !Sub 'arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}'
+                BufferingHints:
+                    IntervalInSeconds: 300
+                    SizeInMBs: 64
+                CompressionFormat: UNCOMPRESSED
+                Prefix: metrics/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/
+                ErrorOutputPrefix: metricsError/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}
+                RoleARN: !GetAtt KinesisDeliveryRole.Arn
+                DataFormatConversionConfiguration:
+                  SchemaConfiguration:
+                    CatalogId: ${self:custom.AWS_ACCOUNT}
+                    RoleARN: !GetAtt KinesisDeliveryRole.Arn
+                    DatabaseName: !Ref GlueDatabase
+                    TableName: !Ref GlueTable
+                    Region: ${aws:region}
+                    VersionId: LATEST
+                  InputFormatConfiguration:
+                    Deserializer:
+                      OpenXJsonSerDe: {}
+                  OutputFormatConfiguration:
+                    Serializer:
+                      ParquetSerDe: {}
+                  Enabled: True

@@ -1,0 +1,38 @@
+{
+    "Records": [
+        {
+            "eventVersion": "2.1",
+            "eventSource": "aws:s3",
+            "awsRegion": "us-east-1",
+            "eventTime": "2021-08-17T00:37:09.354Z",
+            "eventName": "ObjectCreated:Put",
+            "userIdentity": {
+                "principalId": "AWS:AROARTG4DCQ6Z4DQMZJRH:AWSFirehoseToS3"
+            },
+            "requestParameters": {
+                "sourceIPAddress": "34.204.200.208"
+            },
+            "responseElements": {
+                "x-amz-request-id": "C59WC6PX2FNXXWZX",
+                "x-amz-id-2": "CjNYW7WAGjRfe7GLPFtuP2IU86Lwg3nmtZCtcLySimIXgDDDycjH/jNpLqjJg/ttgLvQAqHomfK/tvDH9sX/dvSVIoQ5YiNa"
+            },
+            "s3": {
+                "s3SchemaVersion": "1.0",
+                "configurationId": "apigw-athena-dev-partitionUpdate-0d2e42d17d787a1b97464d1bc81da394",
+                "bucket": {
+                    "name": "apigw-athena-dev",
+                    "ownerIdentity": {
+                        "principalId": "A1EO5SKDLCZE60"
+                    },
+                    "arn": "arn:aws:s3:::apigw-athena-dev"
+                },
+                "object": {
+                    "key": "metrics/year%3D2021/month%3D08/day%3D17/hour%3D00/apigw-athena-metrics-dev-1-2021-08-17-00-30-42-052b9021-7cdd-45fc-92df-523a13c078a1.parquet",
+                    "size": 920,
+                    "eTag": "6d087407ed1f854c84f770ff97156017",
+                    "sequencer": "00611B04BC80444D4B"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,49 @@
+Resources:
+    GlueDatabase:
+        Type: AWS::Glue::Database
+        Properties: 
+            CatalogId: ${self:custom.AWS_ACCOUNT}
+            DatabaseInput:
+              Name: ${self:service}-${sls:stage}-glue
+    GlueTable:
+        Type: AWS::Glue::Table
+        Properties:
+            CatalogId: ${self:custom.AWS_ACCOUNT}
+            DatabaseName: !Ref GlueDatabase
+            TableInput:
+              Owner: owner
+              Name: ${self:service}-${sls:stage}-glue
+              Retention: 0
+              StorageDescriptor:
+                  Columns:
+                  - Name: id
+                    Type: string
+                  - Name: source
+                    Type: string
+                  - Name: type
+                    Type: string
+                  - Name: schemaversion
+                    Type: int
+                  - Name: dataversion
+                    Type: int
+                  - Name: data
+                    Type: string
+                  InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+                  OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+                  Compressed: false
+                  NumberOfBuckets: -1
+                  SerdeInfo:
+                    SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+                    Parameters:
+                      serialization.format: '1'
+                  BucketColumns: []
+                  SortColumns: []
+                  StoredAsSubDirectories: false
+              PartitionKeys:
+                - Name: year
+                  Type: string
+                - Name: month
+                  Type: string
+                - Name: day
+                  Type: string
+              TableType: EXTERNAL_TABLE

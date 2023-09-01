@@ -1,0 +1,97 @@
+org: jefalive
+app: recipe-apigw-athena
+service: recipe-apigw-athena
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:GetBucketLocation"
+        - "s3:GetObject"
+        - "s3:ListBucket"
+        - "s3:ListBucketMultipartUploads"
+        - "s3:ListMultipartUploadParts"
+        - "s3:AbortMultipartUpload"
+        - "s3:CreateBucket"
+        - "s3:PutObject"
+      Resource:
+        - "arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}"
+        - "arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}/*"
+    - Effect: Allow
+      Action:
+        - "firehose:PutRecordBatch"
+        - "firehose:PutRecord"
+        - "firehose:DescribeDeliveryStream"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "athena:*"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "glue:*"
+      Resource:
+        - "*"
+  environment:
+    DATABASE_NAME: ${self:custom.DATABASE_NAME}
+    METRICS_BUCKET: ${self:custom.s3.METRICS_BUCKET}
+    ATHENA_TABLE_NAME: ${self:custom.ATHENA_TABLE_NAME}
+    METRICS_BUCKET_ARN: s3://${self:custom.s3.METRICS_BUCKET}/${self:custom.ATHENA_TABLE_NAME}/
+    FIREHOSE: ${self:custom.FIREHOSE_NAME}
+
+custom:
+  DATABASE_NAME: ${file(athena/yml-athena-helpers.js):database.name}
+  ATHENA_TABLE_NAME: ${file(athena/yml-athena-helpers.js):database.table}
+  FIREHOSE_NAME: ${self:service}-metrics-${sls:stage}
+  AWS_ACCOUNT: ${aws:accountId}
+
+  s3:
+    METRICS_BUCKET: ${self:service}-${sls:stage}
+
+  remover:
+    buckets:
+      - ${self:custom.s3.METRICS_BUCKET}
+
+  athena:
+    databases: # list of your dbs
+      - name: ${self:custom.DATABASE_NAME} # required, your database name, do not use an existing database, will be dropped in deployement process
+        output: s3://${self:custom.s3.METRICS_BUCKET}/ # required, your results bucket
+        ddl: ${file(athena/sql/create-database.sql)} # optional, your DDL containing the CREATE DATABASE statement
+        tables: # list of yout tables
+          - name: ${self:custom.ATHENA_TABLE_NAME} # required, table name
+            ddl: ${file(athena/sql/create-table.sql)} # required, DDL containing the CREATE TABLE
+            keepPartitions: true # force backup and restore partitions
+
+  apiGatewayServiceProxies:
+    - kinesis:
+        path: /${self:service}
+        method: POST
+        streamName: !Ref KinesisStream
+
+resources:
+  - ${file(resources/s3.yml)}
+  - ${file(resources/kinesis_role.yml)}
+  - ${file(resources/glue.yml)}
+  - ${file(resources/firehose.yml)}
+
+plugins:
+  - serverless-athena
+  - serverless-s3-remover
+  - serverless-apigateway-service-proxy
+
+functions:
+  partitionUpdate:
+    handler: athena/handlers/partitionUpdate.run
+    timeout: 120
+    events:
+      - s3:
+          bucket: ${self:custom.s3.METRICS_BUCKET}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: metrics
+          existing: true
