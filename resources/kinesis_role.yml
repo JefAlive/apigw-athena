@@ -29,8 +29,8 @@ Resources:
                           - 's3:ListBucketMultipartUploads'
                           - 's3:PutObject'
                         Resource:
-                          - !Sub 'arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}'
-                          - !Sub 'arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}/*'
+                          - !Sub 'arn:aws:s3:::${self:custom.s3.LOGS_BUCKET}'
+                          - !Sub 'arn:aws:s3:::${self:custom.s3.LOGS_BUCKET}/*'
                       - Effect: Allow
                         Action: 'glue:GetTableVersions'
                         Resource: '*'

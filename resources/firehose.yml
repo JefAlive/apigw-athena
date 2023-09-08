@@ -2,7 +2,7 @@ Resources:
     KinesisStream: 
       Type: AWS::Kinesis::Stream 
       Properties: 
-          Name: MetricsKinesisStream 
+          Name: LogsKinesisStream 
           RetentionPeriodHours: 24
           ShardCount: 1
 
@@ -15,13 +15,13 @@ Resources:
                 KinesisStreamARN: { Fn::GetAtt: [KinesisStream, Arn] }
                 RoleARN: { Fn::GetAtt: [KinesisDeliveryRole, Arn] }
             ExtendedS3DestinationConfiguration:
-                BucketARN: !Sub 'arn:aws:s3:::${self:custom.s3.METRICS_BUCKET}'
+                BucketARN: !Sub 'arn:aws:s3:::${self:custom.s3.LOGS_BUCKET}'
                 BufferingHints:
                     IntervalInSeconds: 300
                     SizeInMBs: 64
                 CompressionFormat: UNCOMPRESSED
-                Prefix: metrics/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/
-                ErrorOutputPrefix: metricsError/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}
+                Prefix: logs/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/
+                ErrorOutputPrefix: logsError/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}
                 RoleARN: !GetAtt KinesisDeliveryRole.Arn
                 DataFormatConversionConfiguration:
                   SchemaConfiguration:

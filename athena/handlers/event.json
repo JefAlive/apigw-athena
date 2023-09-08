@@ -27,7 +27,7 @@
                     "arn": "arn:aws:s3:::apigw-athena-dev"
                 },
                 "object": {
-                    "key": "metrics/year%3D2021/month%3D08/day%3D17/hour%3D00/apigw-athena-metrics-dev-1-2021-08-17-00-30-42-052b9021-7cdd-45fc-92df-523a13c078a1.parquet",
+                    "key": "logs/year%3D2021/month%3D08/day%3D17/hour%3D00/apigw-athena-logs-dev-1-2021-08-17-00-30-42-052b9021-7cdd-45fc-92df-523a13c078a1.parquet",
                     "size": 920,
                     "eTag": "6d087407ed1f854c84f770ff97156017",
                     "sequencer": "00611B04BC80444D4B"

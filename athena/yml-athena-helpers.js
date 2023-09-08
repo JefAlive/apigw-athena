@@ -5,6 +5,6 @@ module.exports.database = async({ resolveVariable }) => {
 
     return {
         name: `${table}_${stage}`,
-        table: `metrics`
+        table: `logs`
     }
 };
