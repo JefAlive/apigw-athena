@@ -1,9 +1,8 @@
 CREATE EXTERNAL TABLE IF NOT EXISTS ${self:custom.ATHENA_TABLE_NAME} (
   source string,
-  type string,
-  schemaversion int,
-  dataversion int,
-  data string
+  logtype string,
+  timestamp timestamp,
+  message string
 )
 PARTITIONED BY (year string, month string, day string)
 ROW FORMAT SERDE

@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "deploy": "serverless deploy --stage dev --region us-east-1",
-    "upload-sample": "sh ./scripts/upload-file.sh"
+    "deploy": "serverless deploy --stage dev --region us-east-1"
   },
   "author": "",
   "license": "ISC",

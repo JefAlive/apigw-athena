@@ -1,6 +1,6 @@
 'use strict';
 
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk');
 const AthenaExpress = require('athena-express');
 const format = require('date-fns/format')
 

@@ -1,10 +1,6 @@
 {
-  "source": "coleta",
-  "type": "restart",
-  "schemaVersion": 1,
-  "dataVersion": 1,
-  "data": {
-    "opa": "e ai",
-    "belezinha": "sussegado"
-  }
+  "source": "financialSystem",
+  "logtype": "error",
+  "timestamp": "1694209417035",
+  "message": "ooops, something went wrong"
 }
